@@ -3,294 +3,448 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
-	id: root
-	width: Screen.width
-	height: Screen.height
-	color: config.BackgroundColor
+    id: root
 
-	property color textColor: config.TextColor
-	property color secondaryTextColor: config.SecondaryTextColor
-	property color panelColor: config.PanelColor
-	property color fieldColor: config.FieldColor
-	property color accentColor: config.AccentColor
+    width: Screen.width
+    height: Screen.height
 
-	Image {
-		anchors.fill: parent
-		source: config.Background
-		fillMode: Image.PreserveAspectCrop
-		asynchronous: true
-		cache: false
+    color: config.BackgroundColor
 
-		onStatusChanged: {
-			if (status === Image.Error)
-			visible = false
-		}
-	}
+    property color textColor: config.TextColor
+    property color secondaryTextColor: config.SecondaryTextColor
+    property color panelColor: config.PanelColor
+    property color fieldColor: config.FieldColor
+    property color accentColor: config.AccentColor
 
-	// Escurece levemente o wallpaper para manter o login legível.
-	Rectangle {
-		anchors.fill: parent
-		color: "#000000"
-		opacity: 0.28
-	}
+    Image {
+        anchors.fill: parent
 
-	ColumnLayout {
-		id: loginArea
-		anchors.centerIn: parent
-		width: Math.min(360, root.width * 0.82)
-		spacing: 12
+        source: config.Background
+        fillMode: Image.PreserveAspectCrop
+        asynchronous: true
+        cache: false
 
-		Text {
-			Layout.fillWidth: true
-			text: Qt.formatTime(new Date(), config.TimeFormat)
-			color: root.textColor
-			font.pixelSize: Math.max(32, root.height * 0.055)
-			font.weight: Font.Light
-			horizontalAlignment: Text.AlignHCenter
-		}
+        onStatusChanged: {
+            if (status === Image.Error)
+                visible = false
+        }
+    }
 
-		Text {
-			id: dateText
-			Layout.fillWidth: true
-			color: root.secondaryTextColor
-			font.pixelSize: 16
-			horizontalAlignment: Text.AlignHCenter
-		}
+    // Escurece levemente o wallpaper para manter o login legível.
+    Rectangle {
+        anchors.fill: parent
+        color: "#000000"
+        opacity: 0.28
+    }
 
-		Item { Layout.preferredHeight: 18 }
+    ColumnLayout {
+        id: loginArea
 
-		TextField {
-			id: userField
-			Layout.fillWidth: true
-			implicitHeight: 48
-			placeholderText: "Usuário"
-			color: root.textColor
-			placeholderTextColor: "#999999"
-			leftPadding: 16
-			rightPadding: 16
-			font.pixelSize: 15
-			background: Rectangle {
-				radius: 8
-				color: root.fieldColor
-				opacity: 0.92
-				border.color: userField.activeFocus ? root.accentColor : "#444444"
-				border.width: 1
-			}
+        anchors.centerIn: parent
+        width: Math.min(360, root.width * 0.82)
+        spacing: 12
 
-			Keys.onReturnPressed: passwordField.forceActiveFocus()
-		}
+        // Relógio
+        Text {
+            Layout.fillWidth: true
 
-		TextField {
-			id: passwordField
-			Layout.fillWidth: true
-			implicitHeight: 48
-			placeholderText: "Senha"
-			echoMode: TextInput.Password
-			color: root.textColor
-			placeholderTextColor: "#999999"
-			leftPadding: 16
-			rightPadding: 16
-			font.pixelSize: 15
+            text: Qt.formatTime(new Date(), config.TimeFormat)
 
-			background: Rectangle {
-				radius: 8
-				color: root.fieldColor
-				opacity: 0.92
-				border.color: passwordField.activeFocus ? root.accentColor : "#444444"
-				border.width: 1
-			}
+            color: root.textColor
+            font.pixelSize: Math.max(32, root.height * 0.055)
+            font.weight: Font.Light
 
-			Keys.onReturnPressed: login()
-		}
+            horizontalAlignment: Text.AlignHCenter
+        }
 
-		Button {
-			id: loginButton
-			Layout.fillWidth: true
-			implicitHeight: 46
-			text: "Entrar"
-			font.pixelSize: 15
+        // Data
+        Text {
+            id: dateText
 
-			contentItem: Text {
-				text: loginButton.text
-				color: "#111111"
-				font: loginButton.font
-				horizontalAlignment: Text.AlignHCenter
-				verticalAlignment: Text.AlignVCenter
-			}
+            Layout.fillWidth: true
 
-			background: Rectangle {
-				radius: 8
-				color: loginButton.down ? "#cccccc" : root.accentColor
-			}
+            color: root.secondaryTextColor
+            font.pixelSize: 16
 
-			onClicked: login()
-		}
+            horizontalAlignment: Text.AlignHCenter
+        }
 
-		Text {
-			id: errorText
-			Layout.fillWidth: true
-			visible: text.length > 0
-			text: ""
-			color: "#ff7777"
-			font.pixelSize: 13
-			horizontalAlignment: Text.AlignHCenter
-			wrapMode: Text.WordWrap
-		}
-	}
+        Item {
+            Layout.preferredHeight: 18
+        }
 
-	// Seletor de sessão/desktop na parte inferior.
-	// Ex.: Plasma, GNOME, XFCE, Hyprland, etc.
-	Rectangle {
-		id: sessionBar
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.bottom: parent.bottom
-		anchors.bottomMargin: 28
-		width: Math.min(300, root.width * 0.7)
-		height: 42
-		radius: 8
-		color: root.panelColor
-		opacity: 0.94
-		border.color: "#444444"
-		border.width: 1
+        // Usuário
+        TextField {
+            id: userField
 
-		ComboBox {
-			id: sessionBox
-			anchors.fill: parent
-			anchors.margins: 2
+            Layout.fillWidth: true
+            implicitHeight: 48
 
-			model: sessionModel
-			textRole: "name"
-			currentIndex: sessionModel.lastIndex
+            placeholderText: "Usuário"
 
-			background: Rectangle {
-				radius: 7
-				color: "transparent"
-			}
+            color: root.textColor
+            placeholderTextColor: "#999999"
 
-			contentItem: Text {
-				leftPadding: 14
-				rightPadding: 35
-				text: sessionBox.displayText === ""
-				? "Escolher sessão"
-				: sessionBox.displayText
-				color: root.textColor
-				font.pixelSize: 14
-				verticalAlignment: Text.AlignVCenter
-			}
+            leftPadding: 16
+            rightPadding: 16
 
-			indicator: Text {
-				x: sessionBox.width - width - 12
-				y: (sessionBox.height - height) / 2
-				text: "▼"
-				color: root.secondaryTextColor
-				font.pixelSize: 10
-			}
+            font.pixelSize: 15
 
-			popup: Popup {
-				y: sessionBox.height + 4
-				width: sessionBox.width
-				padding: 4
+            background: Rectangle {
+                radius: 8
 
-				background: Rectangle {
-					radius: 8
-					color: root.panelColor
-					border.color: "#555555"
-					border.width: 1
-				}
+                color: root.fieldColor
+                opacity: 0.92
 
-				contentItem: ListView {
-					clip: true
-					implicitHeight: Math.min(contentHeight, 260)
-					model: sessionBox.popup.visible
-					? sessionBox.delegateModel
-					: null
-					currentIndex: sessionBox.highlightedIndex
+                border.color: userField.activeFocus
+                              ? root.accentColor
+                              : "#444444"
 
-					ScrollIndicator.vertical: ScrollIndicator {}
-				}
-			}
+                border.width: 1
+            }
 
-			delegate: ItemDelegate {
-				width: sessionBox.width - 8
-				height: 38
+            Keys.onReturnPressed: {
+                passwordField.forceActiveFocus()
+            }
+        }
 
-				highlighted: sessionBox.highlightedIndex === index
+        // Senha
+        TextField {
+            id: passwordField
 
-				background: Rectangle {
-					radius: 5
+            Layout.fillWidth: true
+            implicitHeight: 48
 
-					color: highlighted
-					? root.accentColor
-					: root.panelColor
-				}
+            placeholderText: "Senha"
 
-				contentItem: Text {
-					text: model.name
-					color: highlighted
-					? "#111111"
-					: root.textColor
+            echoMode: TextInput.Password
 
-					leftPadding: 10
-					rightPadding: 10
-					verticalAlignment: Text.AlignVCenter
-					elide: Text.ElideRight
-				}
+            color: root.textColor
+            placeholderTextColor: "#999999"
 
-				onClicked: {
-					sessionBox.currentIndex = index
-					sessionBox.popup.close()
-				}
-			}
-		}
-	}
+            leftPadding: 16
+            rightPadding: 16
 
-	// Relógio/data são atualizados a cada segundo.
-	Timer {
-		interval: 1000
-		running: true
-		repeat: true
-		triggeredOnStart: true
+            font.pixelSize: 15
 
-		onTriggered: {
-			var now = new Date()
-			dateText.text = Qt.formatDateTime(now, config.DateFormat)
-		}
-	}
+            background: Rectangle {
+                radius: 8
 
-	function login() {
-		if (userField.text.length === 0) {
-			errorText.text = "Digite o usuário."
-			userField.forceActiveFocus()
-			return
-		}
+                color: root.fieldColor
+                opacity: 0.92
 
-		var session = ""
-		if (sessionModel.count > 0 && sessionBox.currentIndex >= 0)
-		session = sessionModel.data(sessionModel.index(sessionBox.currentIndex, 0), Qt.UserRole + 1)
+                border.color: passwordField.activeFocus
+                              ? root.accentColor
+                              : "#444444"
 
-		errorText.text = ""
-		sddm.login(userField.text, passwordField.text, session)
-	}
+                border.width: 1
+            }
 
-	Connections {
-		target: sddm
+            Keys.onReturnPressed: {
+                login()
+            }
+        }
 
-		function onLoginFailed() {
-			errorText.text = "Usuário ou senha incorretos."
-			passwordField.selectAll()
-			passwordField.forceActiveFocus()
-		}
-	}
+        // Botão Entrar
+        Button {
+            id: loginButton
 
-	Component.onCompleted: {
-		if (config.ForceLastUser && userModel.lastIndex >= 0) {
-			userField.text = userModel.data(
-				userModel.index(userModel.lastIndex, 0),
-				Qt.UserRole + 1
-			)
-			passwordField.forceActiveFocus()
-		} else {
-			userField.forceActiveFocus()
-		}
-	}
+            Layout.fillWidth: true
+            implicitHeight: 46
+
+            text: "Entrar"
+
+            font.pixelSize: 15
+
+            contentItem: Text {
+                text: loginButton.text
+
+                color: "#111111"
+                font: loginButton.font
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            background: Rectangle {
+                radius: 8
+
+                color: loginButton.down
+                       ? "#cccccc"
+                       : root.accentColor
+            }
+
+            onClicked: {
+                login()
+            }
+        }
+
+        // Mensagem de erro
+        Text {
+            id: errorText
+
+            Layout.fillWidth: true
+
+            visible: text.length > 0
+
+            text: ""
+
+            color: "#ff7777"
+            font.pixelSize: 13
+
+            horizontalAlignment: Text.AlignHCenter
+
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    // Seletor de sessão/desktop na parte inferior.
+    //
+    // O ponto importante aqui é que o ComboBox usa o próprio
+    // índice da sessionModel. Esse índice será passado para
+    // sddm.login().
+    Rectangle {
+        id: sessionBar
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 28
+
+        width: Math.min(300, root.width * 0.7)
+        height: 42
+
+        radius: 8
+
+        color: root.panelColor
+        opacity: 0.94
+
+        border.color: "#444444"
+        border.width: 1
+
+        ComboBox {
+            id: sessionBox
+
+            anchors.fill: parent
+            anchors.margins: 2
+
+            model: sessionModel
+
+            textRole: "name"
+
+            // Mantém a última sessão utilizada pelo SDDM.
+            currentIndex: sessionModel.lastIndex
+
+            background: Rectangle {
+                radius: 7
+                color: "transparent"
+            }
+
+            contentItem: Text {
+                leftPadding: 14
+                rightPadding: 35
+
+                text: sessionBox.displayText === ""
+                      ? "Escolher sessão"
+                      : sessionBox.displayText
+
+                color: root.textColor
+
+                font.pixelSize: 14
+
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            indicator: Text {
+                x: sessionBox.width - width - 12
+                y: (sessionBox.height - height) / 2
+
+                text: "▼"
+
+                color: root.secondaryTextColor
+
+                font.pixelSize: 10
+            }
+
+            popup: Popup {
+                y: sessionBox.height + 4
+
+                width: sessionBox.width
+
+                padding: 4
+
+                background: Rectangle {
+                    radius: 8
+
+                    color: root.panelColor
+
+                    border.color: "#555555"
+                    border.width: 1
+                }
+
+                contentItem: ListView {
+                    clip: true
+
+                    implicitHeight: Math.min(
+                        contentHeight,
+                        260
+                    )
+
+                    model: sessionBox.popup.visible
+                           ? sessionBox.delegateModel
+                           : null
+
+                    currentIndex: sessionBox.highlightedIndex
+
+                    ScrollIndicator.vertical: ScrollIndicator {}
+                }
+            }
+
+            delegate: ItemDelegate {
+                width: sessionBox.width - 8
+                height: 38
+
+                highlighted: sessionBox.highlightedIndex === index
+
+                background: Rectangle {
+                    radius: 5
+
+                    color: highlighted
+                           ? root.accentColor
+                           : root.panelColor
+                }
+
+                contentItem: Text {
+                    text: model.name
+
+                    color: highlighted
+                           ? "#111111"
+                           : root.textColor
+
+                    leftPadding: 10
+                    rightPadding: 10
+
+                    verticalAlignment: Text.AlignVCenter
+
+                    elide: Text.ElideRight
+                }
+
+                onClicked: {
+                    sessionBox.currentIndex = index
+                    sessionBox.popup.close()
+                }
+            }
+        }
+    }
+
+    // Atualiza relógio e data a cada segundo.
+    Timer {
+        interval: 1000
+
+        running: true
+        repeat: true
+
+        triggeredOnStart: true
+
+        onTriggered: {
+            var now = new Date()
+
+            dateText.text = Qt.formatDateTime(
+                now,
+                config.DateFormat
+            )
+        }
+    }
+
+    // =========================================================
+    // LOGIN
+    // =========================================================
+    //
+    // IMPORTANTE:
+    //
+    // sddm.login() espera:
+    //
+    //     login(usuario, senha, sessionIndex)
+    //
+    // Portanto NÃO passamos o nome da sessão.
+    // Passamos sessionBox.currentIndex.
+    //
+    function login() {
+
+        // Verifica usuário
+        if (userField.text.length === 0) {
+            errorText.text = "Digite o usuário."
+
+            userField.forceActiveFocus()
+
+            return
+        }
+
+        // Verifica se existem sessões
+        if (sessionModel.count === 0) {
+            errorText.text = "Nenhuma sessão disponível."
+
+            return
+        }
+
+        // Verifica o índice selecionado
+        if (sessionBox.currentIndex < 0 ||
+            sessionBox.currentIndex >= sessionModel.count) {
+
+            errorText.text = "Selecione uma sessão."
+
+            sessionBox.forceActiveFocus()
+
+            return
+        }
+
+        // Índice da sessão selecionada.
+        var sessionIndex = sessionBox.currentIndex
+
+        errorText.text = ""
+
+        // Login usando o ÍNDICE da sessão.
+        sddm.login(
+            userField.text,
+            passwordField.text,
+            sessionIndex
+        )
+    }
+
+    // Trata falha no login.
+    Connections {
+        target: sddm
+
+        function onLoginFailed() {
+            errorText.text = "Usuário ou senha incorretos."
+
+            passwordField.selectAll()
+
+            passwordField.forceActiveFocus()
+        }
+    }
+
+    // =========================================================
+    // INICIALIZAÇÃO
+    // =========================================================
+
+    Component.onCompleted: {
+
+        if (config.ForceLastUser &&
+            userModel.lastIndex >= 0) {
+
+            userField.text = userModel.data(
+                userModel.index(
+                    userModel.lastIndex,
+                    0
+                ),
+                Qt.UserRole + 1
+            )
+
+            passwordField.forceActiveFocus()
+
+        } else {
+
+            userField.forceActiveFocus()
+        }
+    }
 }
