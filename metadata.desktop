@@ -1,0 +1,11 @@
+[SddmGreeterTheme]
+Name=Basic Center
+Description=Tema SDDM simples com login central, data/hora e seletor de sessão
+Author=Custom
+License=MIT
+Type=sddm-theme
+Version=1.0
+Theme-API=2.0
+QtVersion=6
+ConfigFile=theme.conf
+MainScript=Main.qml
