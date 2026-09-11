@@ -2,6 +2,8 @@
 
 Tema SDDM simples e limpo:
 
+![Exemplo](./exemplo.png)
+
 ## Baixar:
 ```bash
 cd ~/
