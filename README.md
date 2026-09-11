@@ -2,57 +2,41 @@
 
 Tema SDDM simples e limpo:
 
-- login centralizado;
-- data e hora acima dos campos;
-- seleção de sessão/desktop na parte inferior;
-- wallpaper configurável por caminho no `theme.conf`;
-- compatível com SDDM/Qt 6.
+## Baixar:
+```bash
+cd ~/
+git clone https://github.com/luracore/simple-sddm
+```
 
-## Alterar o wallpaper
+## Instalar:
+```bash
+sudo rm -rf /usr/share/sddm/themes/simple-sddm
+sudo cp -a ~/simple-sddm /usr/share/sddm/themes/simple-sddm
+```
 
-Edite:
+##Personalizar o wallpaper
 
-`theme.conf`
+Substitua o arquivo:
 
-e altere:
+```bash
+~/simple-sddm/wallpaper.png
+```
 
-`Background=/caminho/para/sua/imagem.jpg`
+pela imagem que deseja utilizar.
 
-Exemplo:
+Depois, realize novamente a etapa da instalação para copiar o novo wallpaper para o diretório do SDDM.
 
-`Background=/home/seu_usuario/Imagens/wallpaper.jpg`
+## Configurar SDDM:
 
-Também funciona com PNG/JPEG e outros formatos suportados pelo Qt.
-
-## Instalar
-
-Copie a pasta para:
-
-`/usr/share/sddm/themes/basic-center`
-
-Depois configure o SDDM:
+Em `/etc/sddm.conf` coloque:
 
 ```ini
 [Theme]
-Current=basic-center
+Current=simple-sddm
 ```
-
-Isso pode ficar em `/etc/sddm.conf` ou em um arquivo dentro de `/etc/sddm.conf.d/`.
 
 ## Testar sem reiniciar o computador
 
-Em sistemas com SDDM Qt6:
-
 ```bash
-sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/basic-center
+sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/simple-sddm
 ```
-
-Em algumas distribuições o executável é `sddm-greeter`:
-
-```bash
-sddm-greeter --test-mode --theme /usr/share/sddm/themes/basic-center
-```
-
-## Observação
-
-O seletor inferior é para escolher a **sessão/desktop** (Plasma, GNOME, XFCE, Hyprland etc.). O SDDM em si é o display manager.
