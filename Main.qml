@@ -26,7 +26,7 @@ Rectangle {
 
         onStatusChanged: {
             if (status === Image.Error)
-                visible = false
+                visible = false;
         }
     }
 
@@ -96,15 +96,13 @@ Rectangle {
                 color: root.fieldColor
                 opacity: 0.92
 
-                border.color: userField.activeFocus
-                              ? root.accentColor
-                              : "#444444"
+                border.color: userField.activeFocus ? root.accentColor : "#444444"
 
                 border.width: 1
             }
 
             Keys.onReturnPressed: {
-                passwordField.forceActiveFocus()
+                passwordField.forceActiveFocus();
             }
         }
 
@@ -133,15 +131,13 @@ Rectangle {
                 color: root.fieldColor
                 opacity: 0.92
 
-                border.color: passwordField.activeFocus
-                              ? root.accentColor
-                              : "#444444"
+                border.color: passwordField.activeFocus ? root.accentColor : "#444444"
 
                 border.width: 1
             }
 
             Keys.onReturnPressed: {
-                login()
+                login();
             }
         }
 
@@ -169,13 +165,11 @@ Rectangle {
             background: Rectangle {
                 radius: 8
 
-                color: loginButton.down
-                       ? "#cccccc"
-                       : root.accentColor
+                color: loginButton.down ? "#cccccc" : root.accentColor
             }
 
             onClicked: {
-                login()
+                login();
             }
         }
 
@@ -198,17 +192,12 @@ Rectangle {
         }
     }
 
-    // Seletor de sessão/desktop na parte inferior.
-    //
-    // O ponto importante aqui é que o ComboBox usa o próprio
-    // índice da sessionModel. Esse índice será passado para
-    // sddm.login().
     Rectangle {
         id: sessionBar
 
+        anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 28
+        anchors.topMargin: 28
 
         width: Math.min(300, root.width * 0.7)
         height: 42
@@ -243,9 +232,7 @@ Rectangle {
                 leftPadding: 14
                 rightPadding: 35
 
-                text: sessionBox.displayText === ""
-                      ? "Escolher sessão"
-                      : sessionBox.displayText
+                text: sessionBox.displayText === "" ? "Escolher sessão" : sessionBox.displayText
 
                 color: root.textColor
 
@@ -284,14 +271,9 @@ Rectangle {
                 contentItem: ListView {
                     clip: true
 
-                    implicitHeight: Math.min(
-                        contentHeight,
-                        260
-                    )
+                    implicitHeight: Math.min(contentHeight, 260)
 
-                    model: sessionBox.popup.visible
-                           ? sessionBox.delegateModel
-                           : null
+                    model: sessionBox.popup.visible ? sessionBox.delegateModel : null
 
                     currentIndex: sessionBox.highlightedIndex
 
@@ -308,17 +290,13 @@ Rectangle {
                 background: Rectangle {
                     radius: 5
 
-                    color: highlighted
-                           ? root.accentColor
-                           : root.panelColor
+                    color: highlighted ? root.accentColor : root.panelColor
                 }
 
                 contentItem: Text {
                     text: model.name
 
-                    color: highlighted
-                           ? "#111111"
-                           : root.textColor
+                    color: highlighted ? "#111111" : root.textColor
 
                     leftPadding: 10
                     rightPadding: 10
@@ -329,8 +307,8 @@ Rectangle {
                 }
 
                 onClicked: {
-                    sessionBox.currentIndex = index
-                    sessionBox.popup.close()
+                    sessionBox.currentIndex = index;
+                    sessionBox.popup.close();
                 }
             }
         }
@@ -346,68 +324,41 @@ Rectangle {
         triggeredOnStart: true
 
         onTriggered: {
-            var now = new Date()
+            var now = new Date();
 
-            dateText.text = Qt.formatDateTime(
-                now,
-                config.DateFormat
-            )
+            dateText.text = Qt.formatDateTime(now, config.DateFormat);
         }
     }
 
-    // =========================================================
-    // LOGIN
-    // =========================================================
-    //
-    // IMPORTANTE:
-    //
-    // sddm.login() espera:
-    //
-    //     login(usuario, senha, sessionIndex)
-    //
-    // Portanto NÃO passamos o nome da sessão.
-    // Passamos sessionBox.currentIndex.
-    //
+    // sddm.login(usuario, senha, sessionIndex)
     function login() {
-
-        // Verifica usuário
         if (userField.text.length === 0) {
-            errorText.text = "Digite o usuário."
+            errorText.text = "Digite o usuário.";
 
-            userField.forceActiveFocus()
+            userField.forceActiveFocus();
 
-            return
+            return;
         }
 
-        // Verifica se existem sessões
         if (sessionModel.count === 0) {
-            errorText.text = "Nenhuma sessão disponível."
+            errorText.text = "Nenhuma sessão disponível.";
 
-            return
+            return;
         }
 
-        // Verifica o índice selecionado
-        if (sessionBox.currentIndex < 0 ||
-            sessionBox.currentIndex >= sessionModel.count) {
+        if (sessionBox.currentIndex < 0 || sessionBox.currentIndex >= sessionModel.count) {
+            errorText.text = "Selecione uma sessão.";
 
-            errorText.text = "Selecione uma sessão."
+            sessionBox.forceActiveFocus();
 
-            sessionBox.forceActiveFocus()
-
-            return
+            return;
         }
 
-        // Índice da sessão selecionada.
-        var sessionIndex = sessionBox.currentIndex
+        var sessionIndex = sessionBox.currentIndex;
 
-        errorText.text = ""
+        errorText.text = "";
 
-        // Login usando o ÍNDICE da sessão.
-        sddm.login(
-            userField.text,
-            passwordField.text,
-            sessionIndex
-        )
+        sddm.login(userField.text, passwordField.text, sessionIndex);
     }
 
     // Trata falha no login.
@@ -415,36 +366,88 @@ Rectangle {
         target: sddm
 
         function onLoginFailed() {
-            errorText.text = "Usuário ou senha incorretos."
+            errorText.text = "Usuário ou senha incorretos.";
 
-            passwordField.selectAll()
-
-            passwordField.forceActiveFocus()
+            passwordField.text = "";
+            passwordField.forceActiveFocus();
         }
     }
 
-    // =========================================================
-    // INICIALIZAÇÃO
-    // =========================================================
-
     Component.onCompleted: {
+        if (config.ForceLastUser && userModel.lastIndex >= 0) {
+            userField.text = userModel.data(userModel.index(userModel.lastIndex, 0), Qt.UserRole + 1);
 
-        if (config.ForceLastUser &&
-            userModel.lastIndex >= 0) {
-
-            userField.text = userModel.data(
-                userModel.index(
-                    userModel.lastIndex,
-                    0
-                ),
-                Qt.UserRole + 1
-            )
-
-            passwordField.forceActiveFocus()
-
+            passwordField.forceActiveFocus();
         } else {
+            userField.forceActiveFocus();
+        }
+    }
 
-            userField.forceActiveFocus()
+    Row {
+        id: powerButtons
+
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 24
+
+        spacing: 10
+        z: 10
+
+        Repeater {
+            model: [
+                {
+                    label: "Suspender",
+                    action: "suspend"
+                },
+                {
+                    label: "Reiniciar",
+                    action: "reboot"
+                },
+                {
+                    label: "Desligar",
+                    action: "powerOff"
+                }
+            ]
+
+            delegate: Button {
+                id: powerButton
+
+                required property var modelData
+
+                text: modelData.label
+
+                implicitWidth: 112
+                implicitHeight: 40
+
+                font.pixelSize: 13
+
+                contentItem: Text {
+                    text: powerButton.text
+                    font: powerButton.font
+                    color: root.textColor
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    radius: 9
+                    color: powerButton.down ? root.accentColor : powerButton.hovered ? "#55333333" : "#33222222"
+
+                    border.width: 1
+                    border.color: powerButton.down ? root.accentColor : "#66ffffff"
+                }
+
+                onClicked: {
+                    if (modelData.action === "suspend") {
+                        sddm.suspend();
+                    } else if (modelData.action === "reboot") {
+                        sddm.reboot();
+                    } else {
+                        sddm.powerOff();
+                    }
+                }
+            }
         }
     }
 }
