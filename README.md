@@ -16,17 +16,17 @@ sudo rm -rf /usr/share/sddm/themes/simple-sddm
 sudo cp -a ~/simple-sddm /usr/share/sddm/themes/simple-sddm
 ```
 
-##Personalizar o wallpaper
+## Personalizar o wallpaper
 
-Substitua o arquivo:
+Coloque suas imagens (`.png`, `.jpg`, `.jpeg`, `.webp`) na pasta:
 
 ```bash
-~/simple-sddm/wallpaper.png
+~/simple-sddm/wallpapers/
 ```
 
-pela imagem que deseja utilizar.
+A cada vez que a tela de login abre, uma delas é sorteada. Para usar sempre a mesma imagem, deixe `WallpaperFolder=` vazio no `theme.conf` e aponte `Background=` para o arquivo desejado.
 
-Depois, realize novamente a etapa da instalação para copiar o novo wallpaper para o diretório do SDDM.
+Depois, realize novamente a etapa da instalação para copiar os wallpapers para o diretório do SDDM.
 
 ## Configurar SDDM:
 
